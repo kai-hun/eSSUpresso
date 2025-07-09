@@ -113,47 +113,48 @@
     const SHEET_RANGE = "cafe_data!A1:Z100";
 
 
+  kakao.maps.load(function () {
     gapi.load('client', () => {
       gapi.client.init({
         apiKey: API_KEY,
         discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
       }).then(() => {
-        gapi.client.sheets.spreadsheets.values.get({
+        return gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: SHEET_ID,
           range: SHEET_RANGE,
-        }).then(res => {
-          const [header, ...rows] = res.result.values;
-          const themeCols = ["THEME_1", "THEME_2", "THEME_3"];
-          const featureCols = ["FEATURE_1", "FEATURE_2", "FEATURE_3", "FEATURE_4"];
-          const menuCols = header.slice(12);
+        });
+      }).then(res => {
+        const [header, ...rows] = res.result.values;
+        const themeCols = ["THEME_1", "THEME_2", "THEME_3"];
+        const featureCols = ["FEATURE_1", "FEATURE_2", "FEATURE_3", "FEATURE_4"];
+        const menuCols = header.slice(12);
 
-          cafeData = rows.map((row, idx) => {
-            const rowObj = Object.fromEntries(header.map((h, i) => [h, row[i]]));
-            return {
-              id: idx + 1,
-              name: rowObj.CAFE_NAME,
-              lat: parseFloat(rowObj.LAT),
-              lng: parseFloat(rowObj.LNG),
-              image: rowObj.IMAGE,
-              operatingHours: `${rowObj.OPEN}-${rowObj.CLOSE}`,
-              theme: themeCols.map(k => rowObj[k]).filter(Boolean),
-              features: featureCols.map(k => rowObj[k]).filter(Boolean),
-              menus: menuCols
-                .filter(k => rowObj[k])
-                .map(k => ({
-                  name: k,
-                  price: parseInt(rowObj[k].replace(/[₩,]/g, ""))
-                }))
-            };
-          }).filter(c => c.lat && c.lng);
-        kakao.maps.load(function () {
-        initMap();
+        cafeData = rows.map((row, idx) => {
+          const rowObj = Object.fromEntries(header.map((h, i) => [h, row[i]]));
+          return {
+            id: idx + 1,
+            name: rowObj.CAFE_NAME,
+            lat: parseFloat(rowObj.LAT),
+            lng: parseFloat(rowObj.LNG),
+            image: rowObj.IMAGE,
+            operatingHours: `${rowObj.OPEN}-${rowObj.CLOSE}`,
+            theme: themeCols.map(k => rowObj[k]).filter(Boolean),
+            features: featureCols.map(k => rowObj[k]).filter(Boolean),
+            menus: menuCols
+              .filter(k => rowObj[k])
+              .map(k => ({
+                name: k,
+                price: parseInt(rowObj[k].replace(/[₩,]/g, ""))
+              }))
+          };
+        }).filter(c => c.lat && c.lng);
+
+        initMap(); // ✅ 지도 로딩 시작
+      }).catch(error => {
+        console.error("❗ 시트 불러오기 실패:", error);
       });
-    }).catch(error => {
-      console.error("❗ 시트 불러오기 실패:", error);
     });
   });
-});
 </script>
 </body>
 </html>
