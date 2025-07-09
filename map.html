@@ -146,18 +146,14 @@
                 }))
             };
           }).filter(c => c.lat && c.lng);
-
-          if (typeof kakao !== "undefined" && kakao.maps && typeof initMap === "function") {
-            kakao.maps.load(initMap);
-          }
-        });
+        kakao.maps.load(function () {
+        initMap();
       });
+    }).catch(error => {
+      console.error("❗ 시트 불러오기 실패:", error);
     });
-  </script>
-  <script>
-setTimeout(() => {
-  console.log("✅ cafeData:", cafeData);
-}, 3000);
+  });
+});
 </script>
 </body>
 </html>
