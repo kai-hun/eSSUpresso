@@ -85,7 +85,7 @@
   <script>
     const API_KEY = "AIzaSyAfcvgLaCPSbAw6xqVHGCFqPiKgXWUED7E";
     const SHEET_ID = "1eOyqB03QmpaW_b7CFWH6emkeAdOWLx170-Jk7PhcTFM";
-    const SHEET_RANGE = encodeURIComponent("카페목록!A1:Z100");
+    const SHEET_RANGE = "cafe_data!A1:Z100";
 
     gapi.load('client', () => {
       gapi.client.init({
@@ -94,7 +94,7 @@
       }).then(() => {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: SHEET_ID,
-          range: decodeURIComponent(SHEET_RANGE),
+          range: SHEET_RANGE,
         }).then(res => {
           const [header, ...rows] = res.result.values;
           const themeCols = ["THEME_1", "THEME_2", "THEME_3"];
